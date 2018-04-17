@@ -2,9 +2,10 @@
 'use strict';
 
 const express = require('express');
-let app = express();
+const app = express();
 const jwt = require('jsonwebtoken');
 const config = require('../config/config'); // Importing configuration file
+app.set('appsecret', config.secret);
 
 // GET / index api endpoint (public route).
 app.get('/', (req, res) => {
@@ -19,13 +20,14 @@ app.post('/login', (req, res) => {
   user.username = username;
   user.password = password;
 
+
   if (username && password) {  // checks if both username and password have been provided.
     
     const payload = {
       user
     };
     
-    let token = jwt.sign(payload, app.get(config.secret), {
+    let token = jwt.sign(payload, app.get('appsecret'), {
       expiresIn: 86400  // the token expires after 24 hours
     });
     res.status(200).json({

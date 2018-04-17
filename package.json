@@ -15,6 +15,10 @@
     "config": "^1.20.1",
     "eslint": "^4.19.1",
     "express": "^4.13.4",
+    "fast-json-patch": "^2.0.6",
+    "json-patch": "^0.7.0",
+    "jsonpatch": "^3.0.1",
+    "jsonwebtoken": "^8.2.1",
     "morgan": "^1.7.0"
   },
   "devDependencies": {
