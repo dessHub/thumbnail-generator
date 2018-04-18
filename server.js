@@ -11,19 +11,19 @@ const config = require('./config/config');
 const privateRoutes = require('./routes/protected');
 const publicRoutes = require('./routes/public');;
 
-app.use(morgan('dev')); // log every request to the console
+  app.use(morgan('dev')); // log every request to the console
 
 // parse application/json
 app.use(bodyParser.json());                                     
 app.use(bodyParser.urlencoded({extended: true}));
 
 // routes ======================================================================
-app.use('/', publicRoutes); // load public routes and pass in app 
-app.use('/protected', privateRoutes); // load private/protected routes and pass in app
+app.use(publicRoutes); // load public routes and pass in app 
+app.use(privateRoutes); // load private/protected routes and pass in app
 
 // launch ======================================================================
 app.listen(port, () => {
     console.log('It is live on port ' + port);
 });
 
-
+module.exports = app;

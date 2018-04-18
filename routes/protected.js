@@ -2,7 +2,8 @@
 'use strict';
 
 const express = require('express');
-const app = express.Router();
+const app = express();
+const router = express.Router();
 const jwt = require('jsonwebtoken');
 const verifytoken = require('../middlewares/verifytoken');
 const config = require('../config/config');
@@ -11,13 +12,16 @@ const jimp = require('jimp');
 
 app.use(verifytoken); 
 
-// GET /api route: Returns the user object after decoding information from JWT
-app.get('/', (req, res) => {
-    res.status(200).json( req.decoded );
+// GET /protected route: Returns the user object after decoding information from JWT
+router.get('/protected/', (req, res) => {
+    res.status(200).json( {
+      success: true,
+      obj: req.decoded 
+    });
   });
 
   // POST route to pass a json object and patch json arrays then return a json patched document
-app.post('/json_patch', (req, res) => {
+router.post('/protected/json_patch', (req, res) => {
     let theObj = req.body.obj;
     let thePatch = req.body.patch;
 
@@ -36,7 +40,7 @@ app.post('/json_patch', (req, res) => {
 });
 
 // Post endpoint to generate image thumbnail from a url
-app.post('/generate_thumnail', (req,res) => {
+router.post('/protected/generate_thumnail', (req,res) => {
     let imgurl = req.body.imgurl;
 
     if(imgurl) {
