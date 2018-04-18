@@ -52,7 +52,7 @@ router.post('/protected/generate_thumnail', (req,res) => {
             message: err
           })
         }else{
-        thumbnail.resize(100, jimp.AUTO)            // resize
+        thumbnail.resize(50, 50)            // resize
              .quality(60)                 // set JPEG quality
              .getBase64(jimp.AUTO, (error, thumb) => {
                if (error) throw err;
