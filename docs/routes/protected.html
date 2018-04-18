@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>protected.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="../docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>protected.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-comment">/* global module */</span>
+<span class="hljs-meta">'use strict'</span>;
+
+<span class="hljs-keyword">const</span> express = <span class="hljs-built_in">require</span>(<span class="hljs-string">'express'</span>);
+<span class="hljs-keyword">const</span> app = express();
+<span class="hljs-keyword">const</span> jwt = <span class="hljs-built_in">require</span>(<span class="hljs-string">'jsonwebtoken'</span>);
+<span class="hljs-keyword">const</span> verifytoken = <span class="hljs-built_in">require</span>(<span class="hljs-string">'../middlewares/verifytoken'</span>);
+<span class="hljs-keyword">const</span> config = <span class="hljs-built_in">require</span>(<span class="hljs-string">'../config/config'</span>);
+<span class="hljs-keyword">const</span> jsonpatch = <span class="hljs-built_in">require</span>(<span class="hljs-string">'jsonpatch'</span>); 
+<span class="hljs-keyword">const</span> jimp = <span class="hljs-built_in">require</span>(<span class="hljs-string">'jimp'</span>);
+
+app.use(verifytoken);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>GET /protected route: Returns the user object after decoding information from JWT</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>router.get(<span class="hljs-string">'/'</span>, (req, res) =&gt; {
+    res.status(<span class="hljs-number">200</span>).json( {
+      <span class="hljs-attr">success</span>: <span class="hljs-literal">true</span>,
+      <span class="hljs-attr">obj</span>: req.decoded 
+    });
+  });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>POST route to pass a json object and patch json arrays then return a json patched document</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>router.post(<span class="hljs-string">'/json_patch'</span>, (req, res) =&gt; {
+    <span class="hljs-keyword">let</span> theObj = req.body.obj;
+    <span class="hljs-keyword">let</span> thePatch = req.body.patch;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>checks if json object and json patch array have been passed from the from the body</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">if</span>(theObj &amp;&amp; thePatch) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>Applies a patch to theObj</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="hljs-keyword">let</span> patcheddoc = jsonpatch.apply_patch(theObj, thePatch); 
+      res.status(<span class="hljs-number">200</span>).json({
+        <span class="hljs-attr">success</span>:<span class="hljs-literal">true</span>,
+        <span class="hljs-attr">document</span>: patcheddoc
+      });
+    }<span class="hljs-keyword">else</span>{
+      res.status(<span class="hljs-number">400</span>).json({
+        <span class="hljs-attr">success</span>: <span class="hljs-literal">false</span>,
+        <span class="hljs-attr">message</span>: <span class="hljs-string">"Please provide obj (JSON) and patch (JSON Array) on the form"</span>
+      })
+    }
+});</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>Post endpoint to generate image thumbnail from a url</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>router.post(<span class="hljs-string">'/generate_thumnail'</span>, (req,res) =&gt; {
+    <span class="hljs-keyword">let</span> imgurl = req.body.imgurl;
+
+    <span class="hljs-keyword">if</span>(imgurl) {
+      jimp.read(imgurl, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">err, thumbnail</span>) </span>{
+        <span class="hljs-keyword">if</span> (err){
+          <span class="hljs-built_in">console</span>.log(err);
+          res.status(<span class="hljs-number">400</span>).json({
+            <span class="hljs-attr">success</span>: <span class="hljs-literal">false</span>,
+            <span class="hljs-attr">message</span>: err
+          })
+        }<span class="hljs-keyword">else</span>{
+        thumbnail.resize(<span class="hljs-number">50</span>, <span class="hljs-number">50</span>)            <span class="hljs-comment">// resize</span>
+             .quality(<span class="hljs-number">60</span>)                 <span class="hljs-comment">// set JPEG quality</span>
+             .getBase64(jimp.AUTO, (error, thumb) =&gt; {
+               <span class="hljs-keyword">if</span> (error) <span class="hljs-keyword">throw</span> err;
+               res.status(<span class="hljs-number">200</span>).json({
+                 <span class="hljs-attr">success</span>: <span class="hljs-literal">true</span>,
+                 <span class="hljs-attr">message</span>: <span class="hljs-string">"Thumbnail generated successfully"</span>,
+                 <span class="hljs-attr">thumbnail</span>: thumb    <span class="hljs-comment">// return the image thumnail</span>
+               });
+             }); 
+            };
+      });
+    }<span class="hljs-keyword">else</span>{
+      res.status(<span class="hljs-number">400</span>).json({
+        <span class="hljs-attr">success</span>: <span class="hljs-literal">false</span>,
+        <span class="hljs-attr">message</span>: <span class="hljs-string">"Please provide/pass image url (imgurl) on the form"</span>
+      });
+    }
+})
+
+<span class="hljs-built_in">module</span>.exports = app;</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>test_protected_thumbnail.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="../docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>test_protected_thumbnail.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-comment">/* global process, describe, it */</span>
+<span class="hljs-meta">'use strict'</span>;
+
+process.env.NODE_ENV = <span class="hljs-string">'test'</span>;
+
+<span class="hljs-keyword">const</span> chai = <span class="hljs-built_in">require</span>(<span class="hljs-string">'chai'</span>);
+<span class="hljs-keyword">const</span> chaiHttp = <span class="hljs-built_in">require</span>(<span class="hljs-string">'chai-http'</span>);
+
+<span class="hljs-keyword">const</span> token = <span class="hljs-string">'?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJuYW1lIjoiZmVsaXgiLCJwYXNzd29yZCI6InBhc3MifSwiaWF0IjoxNTI0MDM0MjkxLCJleHAiOjE1MjQxMjA2OTF9.qzW1lzQfbvo-iOPKjr4t-YGLlquyBIX4Ek-b_-MxvGI'</span>;
+<span class="hljs-keyword">const</span> wrongToken = <span class="hljs-string">'?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJuYW1lIjoiZmVsaXgiLCJwYXNzd29yZCI6InBhc3MifSwiaWF0IjoxNTI0MDM0MjkxLCJleHAiOjE1MjQxMjA2OTF9.qzW1lzQfbvo-iOPKjr4t-YGLlquyBIX4Ek-b_-MxvGI'</span>;
+<span class="hljs-keyword">const</span> imgurl = <span class="hljs-string">"https://static.depositphotos.com/storage/image/b777195d2fbfd20498edac30eb573d4b865a7f0d.jpg"</span>;
+
+<span class="hljs-keyword">const</span> api = <span class="hljs-built_in">require</span>(<span class="hljs-string">'../server'</span>);
+chai.should();
+
+chai.use(chaiHttp);
+
+describe(<span class="hljs-string">'Protected Endpoints: Thumbnail Generation '</span>, () =&gt; {
+  it(<span class="hljs-string">'Should return an image thumbnail if imageUrl and valid token is provided .POST /protected/generate_thumnail '</span>, (done) =&gt; {
+    chai.request(api)
+      .post(<span class="hljs-string">'/protected/generate_thumnail'</span>+ token )                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+      .send({ <span class="hljs-attr">imagurl</span>: imgurl })
+      .end(<span class="hljs-function">(<span class="hljs-params">err, res</span>) =&gt;</span> {
+        res.should.have.status(<span class="hljs-number">200</span>);
+        res.should.be.json;
+        res.body.should.have.property(<span class="hljs-string">'success'</span>).eql(<span class="hljs-literal">true</span>);
+        res.body.should.have.property(<span class="hljs-string">'message'</span>).eql(<span class="hljs-string">'Thumbnail generated successfully'</span>);
+        res.body.should.have.property(<span class="hljs-string">'thumbnail'</span>);
+        done();
+      });
+  });
+  it(<span class="hljs-string">'Should return status of 400 if verification token is not provided. POST /protected/generate_thumbnail '</span>, (done) =&gt; {
+    chai.request(api)
+      .post(<span class="hljs-string">'/protected/generate_thumnail'</span>)
+      .send({ <span class="hljs-attr">imgurl</span>: imgurl })
+      .end(<span class="hljs-function">(<span class="hljs-params">err, res</span>) =&gt;</span> {
+        res.should.have.status(<span class="hljs-number">400</span>);
+        res.should.be.json;
+        res.body.should.be.a(<span class="hljs-string">'object'</span>);
+        res.body.should.have.property(<span class="hljs-string">'success'</span>).eql(<span class="hljs-literal">false</span>);
+        res.body.should.have.property(<span class="hljs-string">'message'</span>).eql(<span class="hljs-string">'No token provided.'</span>);
+        done();
+      });
+  });
+  it(<span class="hljs-string">'Should return status of 403 if verification token provided is incorrect. POST /protected/generate_thumbnail '</span>, (done) =&gt; {
+    chai.request(api)
+      .post(<span class="hljs-string">'/protected/generate_thumnail'</span>+ wrongToken)
+      .send({ <span class="hljs-attr">imgurl</span>: imgurl })
+      .set(<span class="hljs-string">'token'</span>, wrongToken)
+      .end(<span class="hljs-function">(<span class="hljs-params">err, res</span>) =&gt;</span> {
+        res.should.have.status(<span class="hljs-number">403</span>);
+        res.should.be.json;
+        res.body.should.be.a(<span class="hljs-string">'object'</span>);
+        res.body.should.have.property(<span class="hljs-string">'success'</span>).eql(<span class="hljs-literal">false</span>);
+        res.body.should.have.property(<span class="hljs-string">'message'</span>).eql(<span class="hljs-string">'Incorrect Token. Authenticaion Failed.'</span>);
+        done();
+      });
+  });
+  it(<span class="hljs-string">'Should not return an image if no imgUrl is provided with correct verification code. POST /protected/generate_thumbnail '</span>, (done) =&gt; {
+    chai.request(api)
+      .post(<span class="hljs-string">'/protected/generate_thumnail'</span>+ token)
+      .send({})
+      .set(<span class="hljs-string">'token'</span>, token)
+      .end(<span class="hljs-function">(<span class="hljs-params">err, res</span>) =&gt;</span> {
+        res.should.have.status(<span class="hljs-number">400</span>);
+        res.should.be.json;
+        res.body.should.be.a(<span class="hljs-string">'object'</span>);
+        res.body.should.have.property(<span class="hljs-string">'success'</span>).eql(<span class="hljs-literal">false</span>);
+        res.body.should.have.property(<span class="hljs-string">'message'</span>).eql(<span class="hljs-string">'Please provide/pass image url (imgurl) on the form'</span>);
+        done();
+      });
+  });
+});</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>
